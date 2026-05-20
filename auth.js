@@ -1,15 +1,25 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret-work-hours-token';
 const TOKEN_EXPIRY = '7d';
 
 function hashPassword(password) {
-  return bcrypt.hash(password, 10);
+  return new Promise((resolve, reject) => {
+    bcrypt.hash(password, 10, (err, hash) => {
+      if (err) return reject(err);
+      resolve(hash);
+    });
+  });
 }
 
 function comparePassword(password, hash) {
-  return bcrypt.compare(password, hash);
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(password, hash, (err, result) => {
+      if (err) return reject(err);
+      resolve(result);
+    });
+  });
 }
 
 function createToken(user) {
